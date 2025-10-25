@@ -12,7 +12,7 @@ defmodule Cronometros do
 
   # UI principal
   def ui(vigilante_pid) do
-    entrada = IO.gets("> ") |> String.trim()
+    entrada = IO.gets("\n") |> String.trim()
 
     cond do
       entrada == "x" ->

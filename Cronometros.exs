@@ -1,10 +1,10 @@
-defmodule Fabrica do
+defmodule Cronometros do
   # Punto de entrada
   def main do
     IO.puts("Para empezar un nuevo contador ingrese un número, para terminar ingrese 'x'")
 
     # Creamos el proceso vigilante independiente
-    vigilante_pid = spawn(Fabrica, :vigilante, [[] , []])
+    vigilante_pid = spawn(Cronometros, :vigilante, [[] , []])
 
     # Iniciamos la UI, pasando el PID del vigilante
     ui(vigilante_pid)
@@ -49,7 +49,7 @@ defmodule Fabrica do
       # Nueva tarea enviada desde UI
       {:nueva_tarea, segundos} ->
         if length(actuales) < 4 do
-          tarea = spawn(Fabrica, :cronometro, [segundos, self()])
+          tarea = spawn(Cronometros, :cronometro, [segundos, self()])
           vigilante([tarea | actuales], pendientes)
         else
           IO.puts("No hay capacidad, añadiendo #{segundos} a pendienste")
@@ -64,7 +64,7 @@ defmodule Fabrica do
         {actuales, pendientes} =
           if pendientes != [] and length(actuales) < 4 do
             [siguiente | resto] = pendientes
-            tarea = spawn(Fabrica, :cronometro, [siguiente, self()])
+            tarea = spawn(Cronometros, :cronometro, [siguiente, self()])
             {[tarea | actuales], resto}
           else
             {actuales, pendientes}
@@ -84,4 +84,4 @@ defmodule Fabrica do
   end
 end
 
-Fabrica.main()
+Cronometros.main()

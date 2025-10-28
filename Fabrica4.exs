@@ -23,7 +23,7 @@ defmodule Fabrica do
         IO.puts("Finalizado.")
         :ok
 
-      String.contains?("abc", entrada) ->
+      String.contains?("abc", entrada) and String.length(entrada) == 1 ->
         # Enviamos la tarea al vigilante
         send(vigilante_pid, {:nueva_tarea, String.downcase(entrada)})
         solicitar(vigilante_pid)

@@ -19,7 +19,7 @@ defmodule Cronometros do
         IO.puts("Finalizado.")
         :ok
 
-      es_entero?(entrada) ->
+      es_entero?(entrada)->
         segundos = String.to_integer(entrada)
         # Enviamos la tarea al vigilante
         send(vigilante_pid, {:nueva_tarea, segundos})

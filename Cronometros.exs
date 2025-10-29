@@ -1,16 +1,13 @@
 defmodule Cronometros do
-  # Punto de entrada
+
   def main do
     IO.puts("Para empezar un nuevo contador ingrese un número, para terminar ingrese 'x'")
 
-    # Creamos el proceso vigilante independiente
     vigilante_pid = spawn(Cronometros, :vigilante, [[] , []])
 
-    # Iniciamos la UI, pasando el PID del vigilante
     ui(vigilante_pid)
   end
 
-  # UI principal
   def ui(vigilante_pid) do
     entrada = IO.gets("\n") |> String.trim()
 
@@ -21,7 +18,6 @@ defmodule Cronometros do
 
       es_entero?(entrada)->
         segundos = String.to_integer(entrada)
-        # Enviamos la tarea al vigilante
         send(vigilante_pid, {:nueva_tarea, segundos})
         ui(vigilante_pid)
 
@@ -31,7 +27,6 @@ defmodule Cronometros do
     end
   end
 
-  # Cronómetro: notifica al vigilante al terminar
   def cronometro(segundos, vigilante_pid) do
     IO.puts("Iniciando cronómetro de #{segundos}s...")
     :timer.sleep(segundos * 1000)
@@ -39,14 +34,12 @@ defmodule Cronometros do
     send(vigilante_pid, {:terminado, self()})
   end
 
-  # Vigilante: mantiene tareas activas y pendientes
   def vigilante(actuales, pendientes) do
-    # Mostramos estado
+
     IO.puts("Cronómetros activos: #{length(actuales)}/4")
     IO.puts("Pendientes: #{inspect(pendientes)}")
 
     receive do
-      # Nueva tarea enviada desde UI
       {:nueva_tarea, segundos} ->
         if length(actuales) < 4 do
           tarea = spawn(Cronometros, :cronometro, [segundos, self()])
@@ -56,11 +49,9 @@ defmodule Cronometros do
           vigilante(actuales, pendientes ++ [segundos])
         end
 
-      # Notificación de cronómetro terminado
       {:terminado, tarea_pid} ->
         actuales = List.delete(actuales, tarea_pid)
 
-        # Si hay pendientes, lanzamos el siguiente
         {actuales, pendientes} =
           if pendientes != [] and length(actuales) < 4 do
             [siguiente | resto] = pendientes
@@ -74,7 +65,6 @@ defmodule Cronometros do
     end
   end
 
-  # Valida si es un número entero
   def es_entero?(str) do
     case Integer.parse(str) do
       :error -> false
